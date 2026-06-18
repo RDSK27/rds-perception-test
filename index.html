@@ -86,19 +86,30 @@
   }
   .btn-rojo{background:var(--rojo);color:#fff;box-shadow:0 0 14px rgba(162,58,41,.30);}
   .btn-rojo:active{transform:translateY(1px);}
+  .btn-negro{background:var(--negro);color:#fff;box-shadow:0 0 14px rgba(0,0,0,.22);}
+  .btn-negro:active{transform:translateY(1px);}
+  #iniciar{width:min(66vw,250px);}
+  #btnRanking{width:min(54vw,206px);}
   .btn-ranking{
     background:#fff;color:var(--rojo);border:3px solid var(--rojo);
     display:flex;align-items:center;justify-content:center;gap:8px;
   }
   .btn-ranking .cup{font-size:15px;}
 
-  .save-group{display:flex;flex-direction:column;align-items:center;gap:0;}
+  .save-group{display:flex;flex-direction:row;align-items:stretch;justify-content:center;gap:0;}
   .name-input{
-    width:min(44vw,170px);height:var(--ah);text-align:center;font-family:inherit;font-weight:800;
-    letter-spacing:4px;font-size:16px;text-transform:uppercase;color:var(--negro);
-    border:3px solid var(--rojo);border-radius:0;padding:0 10px;background:#fff;
+    width:min(28vw,104px);height:var(--ah);text-align:center;font-family:inherit;font-weight:800;
+    letter-spacing:3px;font-size:16px;text-transform:uppercase;color:var(--negro);
+    border:3px solid var(--rojo);border-right:0;border-radius:0;padding:0 6px;background:#fff;
   }
   .name-input::placeholder{color:#bbb;}
+  .sport-sel{
+    width:min(50vw,186px);height:var(--ah);font-family:inherit;font-weight:800;font-size:14px;
+    letter-spacing:.5px;color:var(--negro);background:#fff;border:3px solid var(--rojo);border-radius:0;
+    padding:0 26px 0 10px;-webkit-appearance:none;appearance:none;cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A23A29'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 9px center;
+  }
   .btn-guardar{
     width:min(34vw,132px);background:var(--rojo);color:#fff;font-weight:700;
     letter-spacing:2px;text-transform:uppercase;font-size:12px;padding:7px 10px;padding:clamp(5px,.9svh,9px) 10px;
@@ -200,6 +211,19 @@
   .res-msg{font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:20px;color:var(--rojo);text-align:center;}
   .res-ens{font-weight:700;font-size:15px;color:var(--negro);text-align:center;}
   .res-ens b{font-size:22px;color:var(--rojo);}
+  /* ===== Panel inferior negro (home) ===== */
+  #home{background:#000;}
+  .home-bottom{
+    background:#000; border-top:4px solid var(--rojo);
+    padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));
+    display:flex; flex-direction:column; align-items:center; gap:clamp(6px,1.3svh,11px);
+  }
+  .home-bottom #iniciar{order:1; width:66%;}
+  .home-bottom #btnRanking{order:2; width:58%;}
+  .home-bottom .save-group{order:3; width:44%;}
+  .home-bottom .save-group .name-input{flex:1; width:auto; min-width:0;}
+  .home-bottom .save-group .sport-sel{flex:1; width:auto; min-width:0; font-size:12px;}
+  .home-bottom footer{order:4; margin-top:2px;}
 </style>
 </head>
 <body>
@@ -239,17 +263,47 @@
       <button data-v="25">25</button>
     </div>
 
-    <div class="actions">
-      <button class="btn btn-rojo" id="iniciar">Iniciar test</button>
-      <button class="btn btn-ranking" id="btnRanking"><span class="cup">&#127942;</span> Ranking</button>
-      <div class="save-group">
-        <input class="name-input" id="nombre" maxlength="3" placeholder="RDS" value="RDS" autocomplete="off">
-        <button class="btn-guardar" id="guardar">Guardar</button>
-      </div>
-    </div>
   </main>
 
-  <footer>RDS Psicolog&#237;a Deportiva &mdash; Test de Percepci&#243;n</footer>
+  <div class="home-bottom">
+      <div class="save-group">
+        <input class="name-input" id="nombre" maxlength="3" placeholder="INI" value="" autocomplete="off">
+        <select class="sport-sel" id="deporte">
+          <option value="ATL">Atletismo</option>
+          <option value="AUT">Automovilismo</option>
+          <option value="BMT">B&#225;dminton</option>
+          <option value="BLC">Baloncesto</option>
+          <option value="BLM">Balonmano</option>
+          <option value="BOX">Boxeo</option>
+          <option value="CIC">Ciclismo</option>
+          <option value="ESC">Escalada</option>
+          <option value="ESG">Esgrima</option>
+          <option value="ESQ">Esqu&#237;</option>
+          <option value="FTB">F&#250;tbol</option>
+          <option value="GIM">Gimnasia</option>
+          <option value="GLF">Golf</option>
+          <option value="HAL">Halterofilia</option>
+          <option value="HCK">Hockey</option>
+          <option value="JUD">Judo</option>
+          <option value="KRT">Karate</option>
+          <option value="MOT">Motociclismo</option>
+          <option value="NTC">Nataci&#243;n</option>
+          <option value="OTR" selected>Otros</option>
+          <option value="PAD">P&#225;del</option>
+          <option value="PRG">Pirag&#252;ismo</option>
+          <option value="REM">Remo</option>
+          <option value="RUG">Rugby</option>
+          <option value="SRF">Surf</option>
+          <option value="TKD">Taekwondo</option>
+          <option value="TNS">Tenis</option>
+          <option value="TRI">Triatl&#243;n</option>
+          <option value="VOL">Voleibol</option>
+        </select>
+      </div>
+      <button class="btn btn-rojo" id="iniciar">Iniciar test</button>
+      <button class="btn btn-ranking" id="btnRanking"><span class="cup">&#127942;</span> Ranking</button>
+      <footer>RDS Psicolog&#237;a Deportiva &mdash; Test de Percepci&#243;n</footer>
+  </div>
   </section>
 
   <section id="game" class="screen">
@@ -435,14 +489,15 @@ function seg(id){
 }
 function selVal(id){ var b=$(id).querySelector('button.sel'); return b?b.getAttribute('data-v'):null; }
 
-var S={mode:'normal',stim:'fijo',total:15,name:'RDS',target:0,curTarget:0,cellSyms:[],targetOrder:[],trial:0,times:[],t0:0,trialT0:0,running:false,raf:0,lock:true,countIv:0,coverTo:0,curLimit:0,limitTo:0,resEnsayos:0};
+var S={mode:'normal',stim:'fijo',total:15,name:'RDS',sport:'',target:0,curTarget:0,cellSyms:[],targetOrder:[],trial:0,times:[],t0:0,trialT0:0,running:false,raf:0,lock:true,countIv:0,coverTo:0,curLimit:0,limitTo:0,resEnsayos:0};
 
 function startGame(){
   S.mode=selVal('segModo')||'normal';
   S.stim=selVal('segEstimulo')||'fijo';
   S.total=parseInt(selVal('segEnsayos')||'5',10);
-  var nm=($('nombre').value||'RDS').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3);
+  var nm=($('nombre').value||'RDS').toUpperCase().replace(/[^A-Z]/g,'').slice(0,3);
   S.name=nm||'RDS';
+  S.sport=($('deporte')&&$('deporte').value)||'';
   runGame();
 }
 function repeatGame(){ runGame(); }
@@ -724,7 +779,8 @@ function sortLb(lb,mode){
   else { lb.sort(function(a,b){ return a.avg-b.avg; }); }
 }
 function saveScore(avg,total){
-  var rec={ mode:S.mode, stim:S.stim, total:S.total, name:S.name, ensayos:S.resEnsayos, avg:Math.round(avg), tt:Math.round(total), ts:Date.now() };
+  var nm = S.sport ? (S.name+'-'+S.sport) : S.name;
+  var rec={ mode:S.mode, stim:S.stim, total:S.total, name:nm, ensayos:S.resEnsayos, avg:Math.round(avg), tt:Math.round(total), ts:Date.now() };
   var k=lbKey(S.mode,S.stim,S.total), lb=loadLb(k);
   lb.push(rec); sortLb(lb,S.mode); lb=lb.slice(0,50);
   try{ localStorage.setItem(k,JSON.stringify(lb)); }catch(e){}
@@ -765,16 +821,25 @@ function paintRank(lb,mode){
     if(mode==='limite'){ av=(lb[i].ensayos!=null?lb[i].ensayos:0)+'/'+lb[i].avg; }
     else { av=lb[i].avg+' ms'; }
     tt=(lb[i].tt!=null?lb[i].tt:lb[i].total);
-    html+='<div class="rank-row"><div class="pos">'+(i+1)+'</div><div class="nm">'+esc(lb[i].name)+'</div><div class="av">'+av+'</div><div class="tt">'+fmtTime(tt)+'</div></div>';
+    html+='<div class="rank-row"><div class="pos">'+(i+1)+'</div><div class="nm">'+esc(lb[i].name)+(lb[i].sport?'-'+esc(lb[i].sport):'')+'</div><div class="av">'+av+'</div><div class="tt">'+fmtTime(tt)+'</div></div>';
   }
   box.innerHTML=html;
 }
+function capName(rows,max){
+  var seen={}, out=[], i, nm;
+  for(i=0;i<rows.length;i++){
+    nm=rows[i].name||'';
+    seen[nm]=(seen[nm]||0)+1;
+    if(seen[nm]<=max){ out.push(rows[i]); }
+  }
+  return out;
+}
 function renderRank(mode,stim,total){
   var key=lbKey(mode,stim,total); S.rankKey=key;
-  var lbLocal=loadLb(key); sortLb(lbLocal,mode); paintRank(lbLocal,mode);
+  var lbLocal=loadLb(key); sortLb(lbLocal,mode); paintRank(capName(lbLocal,3).slice(0,50),mode);
   if(window.fbLoad){
     window.fbLoad(mode,stim,total).then(function(rows){
-      if(rows && S.rankKey===key){ sortLb(rows,mode); paintRank(rows.slice(0,50),mode); }
+      if(rows && S.rankKey===key){ sortLb(rows,mode); paintRank(capName(rows,3).slice(0,50),mode); }
     }).catch(function(){});
   }
 }
@@ -783,6 +848,7 @@ function goHome(){ if(S.countIv){clearInterval(S.countIv);S.countIv=0;} if(S.cov
 
 seg('segModo'); seg('segEstimulo'); seg('segEnsayos');
 segRank('segModoR'); segRank('segEstR'); segRank('segEnsR');
+$('nombre').addEventListener('input', function(){ this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,3); });
 $('iniciar').addEventListener('click', startGame);
 $('btnRanking').addEventListener('click', showRanking);
 $('btnRank2').addEventListener('click', showRanking);
