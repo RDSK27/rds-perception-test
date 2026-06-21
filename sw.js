@@ -1,5 +1,5 @@
 /* RDS Perception Speed Test - Service Worker */
-var CACHE = 'pst-v8';
+var CACHE = 'pst-v18';
 var ASSETS = [
   './',
   './index.html',
@@ -10,8 +10,11 @@ var ASSETS = [
 ];
 
 self.addEventListener('install', function(e){
-  self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(function(cache){ return cache.addAll(ASSETS); }));
+});
+
+self.addEventListener('message', function(e){
+  if(e.data && e.data.action === 'skipWaiting'){ self.skipWaiting(); }
 });
 
 self.addEventListener('activate', function(e){
