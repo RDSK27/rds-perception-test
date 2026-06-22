@@ -119,9 +119,12 @@ if('serviceWorker' in navigator){
     background:var(--rojo);color:#fff;border:0;border-radius:0;cursor:pointer;
     font-family:inherit;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:14px;}
   .nav-btn svg{width:18px;height:18px;}
+  .results-actions { display:flex; flex-direction:row; gap:0; width:100%; z-index:10; border-top:4px solid #b03020; margin-top:0; }
+  .game-ctrl-btn { flex:1; padding:13px; background:#111; color:#fff; border:1px solid #333; border-right:none; font-size:0.82rem; font-weight:900; letter-spacing:0.12em; cursor:pointer; text-transform:uppercase; display:flex; align-items:center; justify-content:center; }
+  .game-ctrl-btn:last-child { border-right:1px solid #ddd; }
 
   /* ----- Ejercicio ----- */
-  .game-body{flex:1;display:flex;flex-direction:column;min-height:0;padding:8px 14px 4px;gap:7px;background:#fff;}
+  .game-body{flex:1;display:flex;flex-direction:column;min-height:0;padding:8px 14px 11px;gap:7px;background:#fff;}
   .target-row{display:flex;align-items:center;justify-content:center;gap:14px;}
   .target-cap{font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:12px;color:var(--azul);text-align:left;line-height:1.1;}
   .target-wrap{display:flex;justify-content:center;}
@@ -184,6 +187,23 @@ if('serviceWorker' in navigator){
   .btn-rank2{flex:1;height:var(--ah);background:#fff;color:var(--rojo);border:2px solid var(--rojo);border-radius:0;font-family:inherit;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:13px;cursor:pointer;}
   .seg-sm button{font-size:12px;padding:7px 4px;letter-spacing:1px;}
   .rank-seg-label{text-align:center;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:10px;color:#999;margin:6px 0 3px;}
+  .rank-screen-title { font-size:1.2rem; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; color:#111; text-align:center; background:#fff; padding:9px 14px 7px; border-bottom:3px solid #b03020; margin-bottom:10px; }
+  .rank-tabs { display:flex; margin-bottom:0; margin-top:0; }
+  .rank-tab { flex:1; padding:5px 4px; font-size:0.58rem; letter-spacing:0.06em; text-align:center; cursor:pointer; color:#999; font-weight:700; text-transform:uppercase; background:#fff; border:1px solid #000; border-right:none; }
+  .rank-tab:last-child { border-right:1px solid #000; }
+  .rank-tab.sel { color:#fff; background:#b03020; border-color:#b03020; }
+  .rank-full-list { background:#fff; }
+  .rank-full-row { display:flex; align-items:center; gap:8px; padding:5px 14px; border-bottom:1px solid #f0f0f0; }
+  .rank-full-row.rank-full-me { background:#fff2ee; box-shadow:inset 3px 0 0 #b03020; }
+  .rank-full-row.rank-full-me .rank-full-name { color:#b03020; font-weight:900; }
+  .rank-full-pos { font-size:0.72rem; font-weight:900; color:#ccc; width:22px; }
+  .rank-full-pos.gold { color:#c9a227; }
+  .rank-full-pos.silver { color:#8e9eab; }
+  .rank-full-pos.bronze { color:#c07941; }
+  .rank-full-name { flex:1; font-size:0.72rem; font-weight:700; color:#111; }
+  .rank-full-ms { font-size:0.72rem; font-weight:900; color:#b03020; }
+  .rank-full-date { font-size:0.5rem; color:#ccc; }
+  .rank-full-empty { text-align:center; padding:24px; font-size:0.62rem; color:#ccc; letter-spacing:0.1em; }
   #segModoR,#segEstR,#segEnsR{margin-bottom:4px;}
   #rkList{margin-top:10px;}
   .res-quad{width:100%;height:clamp(200px,27svh,238px);display:grid;grid-template-columns:1.28fr 1fr;grid-template-rows:1.62fr 1fr;}
@@ -306,9 +326,9 @@ if('serviceWorker' in navigator){
       </div>
       <div class="grid" id="grid"></div>
     </div>
-  <div class="navbar">
-    <button class="nav-btn" data-act="home"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20z"/></svg>Inicio</button>
-    <button class="nav-btn" data-act="repeat"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"/></svg>Repetir</button>
+  <div class="results-actions">
+    <button class="game-ctrl-btn" onclick="goHome()">&#8592; Inicio</button>
+    <button class="game-ctrl-btn" style="border-right:none;border-left:1px solid #333;" onclick="repeatGame()">&#8634; Repetir</button>
   </div>
   </section>
 
@@ -341,9 +361,9 @@ if('serviceWorker' in navigator){
         <button class="btn-rank2" id="btnRank2">Ranking</button>
       </div>
     </div>
-  <div class="navbar">
-    <button class="nav-btn" data-act="home"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20z"/></svg>Inicio</button>
-    <button class="nav-btn" data-act="repeat"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"/></svg>Repetir</button>
+  <div class="results-actions">
+    <button class="game-ctrl-btn" onclick="goHome()">&#8592; Inicio</button>
+    <button class="game-ctrl-btn" style="border-right:none;border-left:1px solid #333;" onclick="repeatGame()">&#8634; Repetir</button>
   </div>
   </section>
 
@@ -352,37 +372,37 @@ if('serviceWorker' in navigator){
       <div class="fail-title">Fallo</div>
       <div class="fail-msg">Te has equivocado, ese no era el s&#237;mbolo. T&#243;mate tiempo y f&#237;jate bien.</div>
     </div>
-  <div class="navbar">
-    <button class="nav-btn" data-act="home"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20z"/></svg>Inicio</button>
-    <button class="nav-btn" data-act="repeat"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"/></svg>Repetir</button>
+  <div class="results-actions">
+    <button class="game-ctrl-btn" onclick="goHome()">&#8592; Inicio</button>
+    <button class="game-ctrl-btn" style="border-right:none;border-left:1px solid #333;" onclick="repeatGame()">&#8634; Repetir</button>
   </div>
   </section>
 
   <section id="ranking" class="screen">
     <div class="rank-body">
-      <div class="rank-title">Ranking</div>
-      <div class="rank-seg-label">Modo</div>
-      <div class="segment seg-sm" id="segModoR">
-        <button data-v="normal">Normal</button>
-        <button data-v="extremo">Extremo</button>
-        <button data-v="limite">L&#237;mite</button>
+      <div class="rank-screen-title">Ranking completo</div>
+      <div class="rank-tabs" id="segModoR">
+        <button class="rank-tab" data-v="normal">Normal</button>
+        <button class="rank-tab" data-v="extremo">Extremo</button>
+        <button class="rank-tab" data-v="limite">L&#237;mite</button>
       </div>
-      <div class="rank-seg-label">Est&#237;mulo</div>
-      <div class="segment seg-sm" id="segEstR">
-        <button data-v="fijo">Fijo</button>
-        <button data-v="cambia">Cambia</button>
+      <div class="rank-tabs" id="segEstR" style="margin-top:-1px;">
+        <button class="rank-tab" data-v="fijo">Fijo</button>
+        <button class="rank-tab" data-v="cambia">Cambia</button>
       </div>
-      <div class="rank-seg-label">Ensayos</div>
-      <div class="segment seg-sm" id="segEnsR">
-        <button data-v="5">5</button>
-        <button data-v="15">15</button>
-        <button data-v="25">25</button>
+      <div class="rank-tabs" id="segEnsR" style="margin-top:-1px;">
+        <button class="rank-tab" data-v="5">5</button>
+        <button class="rank-tab" data-v="15">15</button>
+        <button class="rank-tab" data-v="25">25</button>
       </div>
-      <div id="rkList"></div>
+      <div id="rkList" class="rank-full-list"></div>
     </div>
-  <div class="navbar">
-    <button class="nav-btn" data-act="home"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20z"/></svg>Inicio</button>
-    <button class="nav-btn" data-act="repeat"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"/></svg>Repetir</button>
+  <div style="display:flex; justify-content:center; padding:8px 16px 8px;">
+    <button id="btn-hide-repeated" style="width:60%; padding:7px; font-size:0.65rem; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; background:#111; color:#fff; border:none; cursor:pointer; border-radius:4px;" onclick="toggleHideRepeated()">Mostrar repetidos</button>
+  </div>
+  <div class="results-actions">
+    <button class="game-ctrl-btn" onclick="goHome()">&#8592; Inicio</button>
+    <button class="game-ctrl-btn" style="border-right:none;border-left:1px solid #333;" onclick="repeatGame()">&#8634; Repetir</button>
   </div>
   </section>
 </div>
@@ -436,6 +456,7 @@ function $(id){ return document.getElementById(id); }
 function show(id){ var s=document.querySelectorAll('.screen'); for(var i=0;i<s.length;i++) s[i].classList.remove('active'); $(id).classList.add('active'); }
 function two(n){ return (n<10?'0':'')+n; }
 function fmtTime(ms){ var cs=Math.floor(ms/10), cc=cs%100, s=Math.floor(cs/100), sec=s%60, m=Math.floor(s/60); return m+':'+two(sec)+'.'+two(cc); }
+function fmtDate(ts){ if(!ts) return ''; var d=new Date(ts); return two(d.getDate())+'/'+two(d.getMonth()+1); }
 function fmtRT(ms){ return (ms/1000).toFixed(2); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -777,6 +798,74 @@ function setSeg(id,val){
   var bs=$(id).querySelectorAll('button'),i;
   for(i=0;i<bs.length;i++){ bs[i].classList.toggle('sel', bs[i].getAttribute('data-v')===String(val)); }
 }
+var hideRepeated=true;
+
+function toggleHideRepeated(){
+  hideRepeated=!hideRepeated;
+  var btn=document.getElementById('btn-hide-repeated');
+  if(btn) btn.textContent=hideRepeated?'Mostrar repetidos':'Ocultar repetidos';
+  rankFromSel();
+}
+
+function filterRepeated(list){
+  var max=hideRepeated?1:3;
+  var seen={}, result=[];
+  for(var i=0;i<list.length;i++){
+    var name=(list[i].name||'').toLowerCase().trim();
+    var c=seen[name]||0;
+    if(c<max){ seen[name]=c+1; result.push(list[i]); }
+  }
+  return result;
+}
+
+function getHomeName(){
+  var iniEl=document.getElementById('user-ini-input');
+  var sptEl=document.getElementById('user-sport-select');
+  if(!iniEl||!sptEl) return '';
+  var nm=((iniEl.value||'RDS').toUpperCase().replace(/[^A-Z]/g,'').slice(0,3))||'RDS';
+  var sport=(sptEl.value||'').trim().toUpperCase();
+  return sport ? (nm+'-'+sport) : nm;
+}
+
+function renderRankList(list, el, m){
+  list=filterRepeated(list);
+  var medals=['gold','silver','bronze'];
+  var meName=getHomeName();
+  var myIdx=-1, myEntry=null;
+  if(meName){
+    for(var k=0;k<list.length;k++){
+      if((list[k].name||'').trim().toUpperCase()===meName){ myIdx=k; myEntry=list[k]; break; }
+    }
+  }
+  el.innerHTML='';
+  var display=list.slice(0,15);
+  if(!display.length){
+    var d=document.createElement('div');d.className='rank-full-empty';
+    d.textContent='Sin resultados';el.appendChild(d);return;
+  }
+  function buildRow(entry, posLabel, medalIdx, isMe){
+    var row=document.createElement('div');row.className='rank-full-row'+(isMe?' rank-full-me':'');
+    var pos=document.createElement('div');
+    pos.className='rank-full-pos'+(medalIdx>=0 && medalIdx<3?' '+medals[medalIdx]:'');
+    pos.textContent=posLabel;
+    var nm=document.createElement('div');nm.className='rank-full-name';nm.textContent=entry.name;
+    var ms=document.createElement('div');ms.className='rank-full-ms';
+    ms.textContent=entry.avg+' ms';
+    var dt=document.createElement('div');dt.className='rank-full-date';dt.textContent=entry.ts?fmtDate(entry.ts):'';
+    row.appendChild(pos);row.appendChild(nm);row.appendChild(ms);row.appendChild(dt);
+    return row;
+  }
+  for(var i=0;i<display.length;i++){
+    var rowName=(display[i].name||'').trim().toUpperCase();
+    var isMe=meName && rowName===meName;
+    el.appendChild(buildRow(display[i], (i+1), i, isMe));
+  }
+  if(myEntry && myIdx>=15){
+    var posLabel=(myIdx+1>=100)?'100+':String(myIdx+1);
+    el.appendChild(buildRow(myEntry, posLabel, -1, true));
+  }
+}
+
 function rankFromSel(){
   var mode=selVal('segModoR')||'normal';
   var stim=selVal('segEstR')||'fijo';
@@ -793,23 +882,14 @@ function segRank(id){
   });
 }
 function showRanking(){
+  hideRepeated=true;
+  var btn=document.getElementById('btn-hide-repeated');
+  if(btn) btn.textContent='Mostrar repetidos';
   var mode=selVal('segModo')||'normal';
   var stim=selVal('segEstimulo')||'fijo';
   var total=parseInt(selVal('segEnsayos')||'5',10);
   setSeg('segModoR',mode); setSeg('segEstR',stim); setSeg('segEnsR',total);
   renderRank(mode,stim,total); show('ranking');
-}
-function paintRank(lb,mode){
-  var box=$('rkList');
-  if(!lb || !lb.length){ box.innerHTML='<div class="rank-empty">Sin registros todav\u00eda</div>'; return; }
-  var html='', i, av, tt;
-  for(i=0;i<lb.length;i++){
-    if(mode==='limite'){ av=(lb[i].ensayos!=null?lb[i].ensayos:0)+'/'+lb[i].avg; }
-    else { av=lb[i].avg+' ms'; }
-    tt=(lb[i].tt!=null?lb[i].tt:lb[i].total);
-    html+='<div class="rank-row"><div class="pos">'+(i+1)+'</div><div class="nm">'+esc(lb[i].name)+(lb[i].sport?'-'+esc(lb[i].sport):'')+'</div><div class="av">'+av+'</div><div class="tt">'+fmtTime(tt)+'</div></div>';
-  }
-  box.innerHTML=html;
 }
 function capName(rows,max){
   var seen={}, out=[], i, nm;
@@ -822,10 +902,16 @@ function capName(rows,max){
 }
 function renderRank(mode,stim,total){
   var key=lbKey(mode,stim,total); S.rankKey=key;
-  var lbLocal=loadLb(key); sortLb(lbLocal,mode); paintRank(capName(lbLocal,3).slice(0,50),mode);
+  var el=$('rkList'); if(!el) return;
+  var lbLocal=loadLb(key);
+  lbLocal.sort(function(a,b){ return (a.avg||9999)-(b.avg||9999); });
+  renderRankList(lbLocal, el, mode);
   if(window.fbLoad){
     window.fbLoad(mode,stim,total).then(function(rows){
-      if(rows && S.rankKey===key){ sortLb(rows,mode); paintRank(capName(rows,3).slice(0,50),mode); }
+      if(rows && S.rankKey===key){
+        rows.sort(function(a,b){ return (a.avg||9999)-(b.avg||9999); });
+        renderRankList(rows, el, mode);
+      }
     }).catch(function(){});
   }
 }

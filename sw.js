@@ -1,5 +1,5 @@
 /* RDS Perception Speed Test - Service Worker */
-var CACHE = 'pst-v18';
+var CACHE = 'pst-v21';
 var ASSETS = [
   './',
   './index.html',
@@ -10,7 +10,12 @@ var ASSETS = [
 ];
 
 self.addEventListener('install', function(e){
-  e.waitUntil(caches.open(CACHE).then(function(cache){ return cache.addAll(ASSETS); }));
+  e.waitUntil(
+    caches.open(CACHE).then(function(cache){
+      // {cache:'reload'} evita que el precache use copias viejas del HTTP cache
+      return cache.addAll(ASSETS.map(function(u){ return new Request(u, {cache:'reload'}); }));
+    })
+  );
 });
 
 self.addEventListener('message', function(e){
@@ -30,10 +35,28 @@ self.addEventListener('fetch', function(e){
   if(req.method !== 'GET'){ return; }
   var url = new URL(req.url);
   var sameOrigin = (url.origin === self.location.origin);
+
+  // NAVEGACION (HTML): network-first -> siempre la ultima version si hay red,
+  // con la cache como respaldo offline.
+  if(req.mode === 'navigate'){
+    e.respondWith(
+      fetch(req).then(function(resp){
+        var copy = resp.clone();
+        caches.open(CACHE).then(function(cache){ try{ cache.put('./index.html', copy); }catch(err){} });
+        return resp;
+      }).catch(function(){
+        return caches.match(req).then(function(cached){ return cached || caches.match('./index.html'); });
+      })
+    );
+    return;
+  }
+
   var isFbSdk = (url.hostname === 'www.gstatic.com' && url.pathname.indexOf('/firebasejs/') !== -1);
-  // El resto de orígenes (p. ej. firestore.googleapis.com) van directos a la red:
-  // así Firestore gestiona su propia persistencia offline.
+  // El resto de origenes (p. ej. firestore.googleapis.com) van directos a la red:
+  // asi Firestore gestiona su propia persistencia offline.
   if(!sameOrigin && !isFbSdk){ return; }
+
+  // ASSETS estaticos: cache-first.
   e.respondWith(
     caches.match(req).then(function(cached){
       if(cached){ return cached; }
