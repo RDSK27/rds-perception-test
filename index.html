@@ -192,7 +192,8 @@ if('serviceWorker' in navigator){
   .result-body{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:9px;padding:12px 14px;background:#fff;text-align:center;}
   .res-chart{width:100%;}
   .res-chart svg{width:100%;height:auto;display:block;}
-  .save-row{display:flex;gap:8px;width:100%;}
+  .save-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;margin-top:16px;}
+  .save-row .btn-save,.save-row .btn-rank2{flex:none;width:min(280px,100%);}
   .btn-save{flex:1;height:var(--ah);background:var(--rojo);color:#fff;border:0;border-radius:0;font-family:inherit;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:13px;cursor:pointer;}
   .btn-save:disabled{background:#9A9A9A;}
   .btn-rank2{flex:1;height:var(--ah);background:#fff;color:var(--rojo);border:2px solid var(--rojo);border-radius:0;font-family:inherit;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:13px;cursor:pointer;}
@@ -202,7 +203,7 @@ if('serviceWorker' in navigator){
   .rank-tabs { display:flex; margin-bottom:0; margin-top:0; }
   .rank-tab { flex:1; padding:5px 4px; font-size:0.58rem; letter-spacing:0.06em; text-align:center; cursor:pointer; color:#999; font-weight:700; text-transform:uppercase; background:#fff; border:1px solid #000; border-right:none; }
   .rank-tab:last-child { border-right:1px solid #000; }
-  .rank-tab.sel { color:#fff; background:#b03020; border-color:#b03020; }
+  .rank-tab.sel { color:#fff; background:#b03020; border-color:#000; }
   .rank-full-list { background:#fff; }
   .rank-full-row { display:flex; align-items:center; gap:8px; padding:5px 14px; border-bottom:1px solid #f0f0f0; }
   .rank-full-row.rank-full-me { background:#fff2ee; box-shadow:inset 3px 0 0 #b03020; }
@@ -219,9 +220,9 @@ if('serviceWorker' in navigator){
   #rkList{margin-top:10px;}
   .res-quad{width:100%;height:clamp(200px,27svh,238px);display:grid;grid-template-columns:1.28fr 1fr;grid-template-rows:1.62fr 1fr;}
   .rq{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 8px;gap:2px;min-width:0;min-height:0;}
-  .rq:nth-child(1){border-right:1.5px solid #2a2a2a;border-bottom:1.5px solid #2a2a2a;}
-  .rq:nth-child(2){border-bottom:1.5px solid #2a2a2a;}
-  .rq:nth-child(3){border-right:1.5px solid #2a2a2a;}
+  .rq:nth-child(1){border-right:3px solid var(--rojo);border-bottom:3px solid var(--rojo);}
+  .rq:nth-child(2){border-bottom:3px solid var(--rojo);}
+  .rq:nth-child(3){border-right:3px solid var(--rojo);}
   .rq-k{font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:10px;color:#9A9A9A;}
   .rq-v{font-weight:800;font-size:34px;line-height:1;color:var(--negro);}
   .rq-media .rq-main{font-weight:800;font-size:46px;line-height:1;color:var(--rojo);}
@@ -235,6 +236,11 @@ if('serviceWorker' in navigator){
   #btn-start { width:70px; height:70px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #e84030 0%, #b03020 45%, #7a1a10 100%); border:none; color:#fff; font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif; font-weight:900; font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; position:relative; box-shadow:inset 0 2px 4px rgba(255,255,255,0.28), inset 0 -3px 6px rgba(0,0,0,0.5); transition:transform 0.08s; }
   #btn-start:active { box-shadow:inset 0 3px 7px rgba(0,0,0,0.6); }
   #user-name-bar { width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 0 5px; box-sizing:border-box; gap:0; }
+
+  /* Overlay "Ejercicio finalizado" (modal a pantalla completa, 1s antes de resultados) */
+  #transition-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#111; z-index:9999; align-items:center; justify-content:center; flex-direction:column; }
+  #transition-overlay.active { display:flex; }
+  #transition-text { color:#fff; font-size:1.6rem; font-weight:900; font-family:Arial,sans-serif; letter-spacing:0.05em; text-align:center; text-transform:uppercase; border-top:4px solid #b03020; border-bottom:4px solid #b03020; padding:16px 30px; }
 </style>
 </head>
 <body>
@@ -397,11 +403,11 @@ if('serviceWorker' in navigator){
         <button class="rank-tab" data-v="extremo">Extremo</button>
         <button class="rank-tab" data-v="limite">L&#237;mite</button>
       </div>
-      <div class="rank-tabs" id="segEstR" style="margin-top:-1px;">
+      <div class="rank-tabs" id="segEstR" style="margin-top:8px;">
         <button class="rank-tab" data-v="fijo">Fijo</button>
         <button class="rank-tab" data-v="cambia">Cambia</button>
       </div>
-      <div class="rank-tabs" id="segEnsR" style="margin-top:-1px;">
+      <div class="rank-tabs" id="segEnsR" style="margin-top:8px;">
         <button class="rank-tab" data-v="5">5</button>
         <button class="rank-tab" data-v="15">15</button>
         <button class="rank-tab" data-v="25">25</button>
@@ -754,6 +760,19 @@ function renderChart(times){
   box.innerHTML=s+'</svg>';
 }
 
+function showSaveScreen(){
+  var ov=document.getElementById('transition-overlay');
+  if(ov){
+    ov.className='active';
+    setTimeout(function(){
+      ov.className='';
+      show('result');
+    }, 1000);
+  } else {
+    setTimeout(function(){ show('result'); }, 800);
+  }
+}
+
 function finish(){
   S.running=false; cancelAnimationFrame(S.raf);
   var total=performance.now()-S.t0, c=calc();
@@ -765,7 +784,7 @@ function finish(){
   S.resAvg=c.avg; S.resTotal=total; S.resEnsayos=c.n; S.saved=false;
   renderChart(S.times);
   var gb=$('btnGuardar'); if(gb){ gb.disabled=false; gb.textContent='Guardar resultado'; }
-  show('result');
+  showSaveScreen();
 }
 
 function limitTimeout(){
@@ -787,7 +806,7 @@ function finishLimite(completed){
   S.resAvg=c.avg; S.resTotal=total; S.resEnsayos=S.trial; S.saved=false;
   renderChart(S.times);
   var gb=$('btnGuardar'); if(gb){ gb.disabled=false; gb.textContent='Guardar resultado'; }
-  show('result');
+  showSaveScreen();
 }
 
 function lbKey(mode,stim,total){ return 'rds_pst_'+mode+'_'+stim+'_'+total; }
@@ -960,12 +979,12 @@ document.addEventListener('click', function(e){ if(e.target.closest && e.target.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 const firebaseConfig = {
-  apiKey: "AIzaSyAIuJppEemyS0dj5VYNM_FqOb-mZHkrZmM",
-  authDomain: "rds-perception-test.firebaseapp.com",
-  projectId: "rds-perception-test",
-  storageBucket: "rds-perception-test.firebasestorage.app",
-  messagingSenderId: "721187247415",
-  appId: "1:721187247415:web:bac3999d2590da463476b2"
+  apiKey: "AIzaSyBbEgbWddPt_rhPM24bL_Nacp7TAlh1biM",
+  authDomain: "rds-reaction-test.firebaseapp.com",
+  projectId: "rds-reaction-test",
+  storageBucket: "rds-reaction-test.firebasestorage.app",
+  messagingSenderId: "490684952529",
+  appId: "1:490684952529:web:bb53a9813bd58ecdb3baf0"
 };
 let db=null;
 try{
@@ -976,17 +995,20 @@ try{
 window.fbReady=!!db;
 window.fbSave=async function(rec){
   if(!db) return false;
-  try{ await addDoc(collection(db,'scores'), rec); return true; }catch(e){ return false; }
+  try{ await addDoc(collection(db,'scores_perception'), rec); return true; }catch(e){ return false; }
 };
 window.fbLoad=async function(mode,stim,total){
   if(!db) return null;
   try{
-    const q=query(collection(db,'scores'), where('mode','==',mode), where('stim','==',stim), where('total','==',total));
+    const q=query(collection(db,'scores_perception'), where('mode','==',mode), where('stim','==',stim), where('total','==',total));
     const snap=await getDocs(q);
     const out=[]; snap.forEach(function(d){ out.push(d.data()); });
     return out;
   }catch(e){ return null; }
 };
 </script>
+<div id="transition-overlay">
+  <div id="transition-text">Ejercicio finalizado</div>
+</div>
 </body>
 </html>
