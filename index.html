@@ -750,7 +750,6 @@ function renderChart(times){
   var s='<svg viewBox="0 0 '+W+' '+H+'">';
   s+='<path d="'+area+'" fill="rgba(162,58,41,0.10)" stroke="none"/>';
   s+='<polyline points="'+poly+'" fill="none" stroke="#A23A29" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
-  for(i=0;i<n;i++){ s+='<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="3.2" fill="#A23A29"/>'; }
   var step=n<=12?1:5;
   for(i=0;i<n;i++){
     if(i===0||i===n-1||((i+1)%step)===0){
