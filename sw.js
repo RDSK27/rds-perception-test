@@ -1,5 +1,5 @@
 /* RDS Perception Speed Test - Service Worker */
-var CACHE = 'pst-v27';
+var CACHE = 'pst-v28';
 var ASSETS = [
   './',
   './index.html',
