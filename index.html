@@ -983,7 +983,12 @@ function capName(rows,max){
 function renderRank(mode,stim,total){
   var key=lbKey(mode,stim,total); S.rankKey=key;
   var el=$('rkList'); if(!el) return;
-  var latest=(S.lastRec && S.lastRecKey===key) ? S.lastRec : null;
+  var latest=null;
+  if(S.saved===false && isFinite(S.resAvg) && lbKey(S.mode,S.stim,S.total)===key){
+    latest={ name:(S.sport?(S.name+'-'+S.sport):S.name), avg:Math.round(S.resAvg), ensayos:S.resEnsayos, ts:Date.now() };
+  } else if(S.lastRec && S.lastRecKey===key){
+    latest=S.lastRec;
+  }
   var lbLocal=loadLb(key);
   lbLocal.sort(function(a,b){ return (a.avg||9999)-(b.avg||9999); });
   renderRankList(lbLocal, el, mode, latest);
