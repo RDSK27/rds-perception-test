@@ -205,10 +205,10 @@ if('serviceWorker' in navigator){
   .res-chart{width:100%;}
   .res-chart svg{width:100%;height:auto;display:block;}
   .save-row{display:flex;justify-content:center;padding:8px 16px 8px;}
-  .save-row .save-row-inner{display:flex;align-items:stretch;gap:8px;width:calc(60% + 54px);max-width:100%;}
-  .btn-save{flex:3;padding:7px;background:var(--rojo);color:#fff;border:none;border-radius:4px;font-family:inherit;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;font-size:0.65rem;cursor:pointer;}
+  .save-row-inner{display:flex;align-items:stretch;justify-content:center;gap:8px;width:calc(60% + 92px);max-width:100%;}
+  .btn-save{flex:1;max-width:60%;padding:7px;background:var(--rojo);color:#fff;border:none;border-radius:4px;font-family:inherit;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;font-size:0.65rem;cursor:pointer;}
   .btn-save:disabled{background:#9A9A9A;}
-  .btn-rank2{flex:2;padding:7px;background:#111;color:#fff;border:none;border-radius:4px;font-family:inherit;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;font-size:0.65rem;cursor:pointer;}
+  .btn-rank2{flex:none;width:84px;padding:7px;background:#111;color:#fff;border:none;border-radius:4px;font-family:inherit;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;font-size:0.65rem;cursor:pointer;}
   .seg-sm button{font-size:12px;padding:7px 4px;letter-spacing:1px;}
   .rank-seg-label{text-align:center;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:10px;color:#999;margin:6px 0 3px;}
   .rank-screen-title { font-size:1.2rem; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; color:#111; text-align:center; background:#fff; padding:9px 14px 7px; border-bottom:3px solid #b03020; margin-bottom:10px; }
@@ -428,9 +428,11 @@ if('serviceWorker' in navigator){
       </div>
       <div id="rkList" class="rank-full-list"></div>
     </div>
-  <div style="display:flex; align-items:stretch; justify-content:center; gap:8px; padding:8px 16px 8px;">
-    <button id="btn-hide-repeated" style="flex:1; max-width:60%; padding:7px; font-size:0.65rem; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; background:#111; color:#fff; border:none; cursor:pointer; border-radius:4px;" onclick="toggleHideRepeated()">Mostrar repetidos</button>
-    <button id="btnGuardarRank" style="display:none; flex:none; width:46px; align-items:center; justify-content:center; background:var(--rojo); color:#fff; border:none; cursor:pointer; border-radius:4px;" aria-label="Guardar mi marca" title="Guardar mi marca"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+  <div style="display:flex; justify-content:center; padding:8px 16px 8px;">
+    <div class="save-row-inner">
+      <button id="btn-hide-repeated" style="flex:1; max-width:60%; padding:7px; font-size:0.65rem; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; background:#111; color:#fff; border:none; cursor:pointer; border-radius:4px;" onclick="toggleHideRepeated()">Mostrar repetidos</button>
+      <button id="btnGuardarRank" style="display:none; flex:none; width:84px; align-items:center; justify-content:center; padding:7px; font-size:0.65rem; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; background:var(--rojo); color:#fff; border:none; cursor:pointer; border-radius:4px;" aria-label="Guardar mi marca" title="Guardar mi marca">Guardar</button>
+    </div>
   </div>
   <div class="results-actions">
     <button class="game-ctrl-btn" onclick="goHome()">&#8592; Inicio</button>
@@ -934,7 +936,15 @@ function updateRankSaveBtn(){
     g.style.cursor='pointer';
     g.setAttribute('aria-label','Guardar mi marca');
     g.setAttribute('title','Guardar mi marca');
-    g.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>';
+    g.textContent='Guardar';
+  } else if(S.saved===true){
+    g.style.display='flex';
+    g.disabled=true;
+    g.style.background='#9A9A9A';
+    g.style.cursor='default';
+    g.setAttribute('aria-label','Marca guardada');
+    g.setAttribute('title','Marca guardada');
+    g.textContent='Guardado';
   } else {
     g.style.display='none';
   }
@@ -994,7 +1004,7 @@ $('btnGuardarRank').addEventListener('click', function(){
   this.style.cursor='default';
   this.setAttribute('aria-label','Marca guardada');
   this.setAttribute('title','Marca guardada');
-  this.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  this.textContent='Guardado';
   var gb=$('btnGuardar'); if(gb){ gb.disabled=true; gb.textContent='Guardado'; }
   rankFromSel();
 });
