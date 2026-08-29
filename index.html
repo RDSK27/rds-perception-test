@@ -220,6 +220,8 @@ if('serviceWorker' in navigator){
   .rank-full-row { display:flex; align-items:center; gap:8px; padding:5px 14px; border-bottom:1px solid #f0f0f0; }
   .rank-full-row.rank-full-me { background:#fff2ee; box-shadow:inset 3px 0 0 #b03020; }
   .rank-full-row.rank-full-me .rank-full-name { color:#b03020; font-weight:900; }
+  .rank-full-row.rank-full-me.me-grey { background:#f0f0f0; box-shadow:inset 3px 0 0 #9A9A9A; }
+  .rank-full-row.rank-full-me.me-grey .rank-full-name { color:#555; }
   .rank-full-pos { font-size:0.72rem; font-weight:900; color:#555; width:22px; }
   .rank-full-pos.gold { color:#c9a227; }
   .rank-full-pos.silver { color:#8e9eab; }
@@ -890,8 +892,8 @@ function renderRankList(list, el, m, latest){
     var d=document.createElement('div');d.className='rank-full-empty';
     d.textContent='Sin resultados';el.appendChild(d);return;
   }
-  function buildRow(entry, posLabel, medalIdx, isMe){
-    var row=document.createElement('div');row.className='rank-full-row'+(isMe?' rank-full-me':'');
+  function buildRow(entry, posLabel, medalIdx, isMe, grey){
+    var row=document.createElement('div');row.className='rank-full-row'+(isMe?' rank-full-me':'')+(isMe&&grey?' me-grey':'');
     var pos=document.createElement('div');
     pos.className='rank-full-pos'+(medalIdx>=0 && medalIdx<3?' '+medals[medalIdx]:'');
     pos.textContent=posLabel;
@@ -918,7 +920,8 @@ function renderRankList(list, el, m, latest){
     if(!shownTs[latest.ts] && !bestExtra){
       var lv=(latest.avg==null?9999:latest.avg), lpos=1;
       for(var q=0;q<list.length;q++){ if((list[q].avg==null?9999:list[q].avg) < lv) lpos++; }
-      el.appendChild(buildRow(latest, (lpos>=100?'100+':String(lpos)), -1, true));
+      var greyLatest=!!(myEntry && myIdx<15 && (myEntry.avg==null?9999:myEntry.avg) < lv);
+      el.appendChild(buildRow(latest, (lpos>=100?'100+':String(lpos)), -1, true, greyLatest));
     }
   }
 }
