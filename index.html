@@ -1029,6 +1029,24 @@ $('btnGuardarRank').addEventListener('click', function(){
   rankFromSel();
 });
 
+(function(){
+  var iniEl=$('user-ini-input'), sptEl=$('user-sport-select');
+  try{
+    var si=localStorage.getItem('rds_pst_ini');
+    var sd=localStorage.getItem('rds_pst_dep');
+    if(iniEl && si) iniEl.value=si;
+    if(sptEl && sd) sptEl.value=sd;
+  }catch(e){}
+  function persistUser(){
+    try{
+      if(iniEl) localStorage.setItem('rds_pst_ini', iniEl.value||'');
+      if(sptEl) localStorage.setItem('rds_pst_dep', sptEl.value||'');
+    }catch(e){}
+  }
+  if(iniEl) iniEl.addEventListener('input', persistUser);
+  if(sptEl) sptEl.addEventListener('change', persistUser);
+})();
+
 var navs=document.querySelectorAll('.nav-btn');
 for(var i=0;i<navs.length;i++){
   navs[i].addEventListener('click', function(){
