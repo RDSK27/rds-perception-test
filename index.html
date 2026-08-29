@@ -837,6 +837,7 @@ function saveScore(avg,total){
   var k=lbKey(S.mode,S.stim,S.total), lb=loadLb(k);
   lb.push(rec); sortLb(lb,S.mode); lb=lb.slice(0,50);
   try{ localStorage.setItem(k,JSON.stringify(lb)); }catch(e){}
+  S.lastRec=rec; S.lastRecKey=k;
   if(window.fbSave){ window.fbSave(rec); }
 }
 
@@ -873,7 +874,7 @@ function getHomeName(){
   return sport ? (nm+'-'+sport) : nm;
 }
 
-function renderRankList(list, el, m){
+function renderRankList(list, el, m, latest){
   list=filterRepeated(list);
   var medals=['gold','silver','bronze'];
   var meName=getHomeName();
@@ -909,6 +910,16 @@ function renderRankList(list, el, m){
   if(myEntry && myIdx>=15){
     var posLabel=(myIdx+1>=100)?'100+':String(myIdx+1);
     el.appendChild(buildRow(myEntry, posLabel, -1, true));
+  }
+  if(latest){
+    var shownTs={};
+    for(var s2=0;s2<display.length;s2++){ if(display[s2].ts!=null) shownTs[display[s2].ts]=1; }
+    var bestExtra=(myEntry && myIdx>=15 && myEntry.ts===latest.ts);
+    if(!shownTs[latest.ts] && !bestExtra){
+      var lv=(latest.avg==null?9999:latest.avg), lpos=1;
+      for(var q=0;q<list.length;q++){ if((list[q].avg==null?9999:list[q].avg) < lv) lpos++; }
+      el.appendChild(buildRow(latest, (lpos>=100?'100+':String(lpos)), -1, true));
+    }
   }
 }
 
@@ -972,14 +983,15 @@ function capName(rows,max){
 function renderRank(mode,stim,total){
   var key=lbKey(mode,stim,total); S.rankKey=key;
   var el=$('rkList'); if(!el) return;
+  var latest=(S.lastRec && S.lastRecKey===key) ? S.lastRec : null;
   var lbLocal=loadLb(key);
   lbLocal.sort(function(a,b){ return (a.avg||9999)-(b.avg||9999); });
-  renderRankList(lbLocal, el, mode);
+  renderRankList(lbLocal, el, mode, latest);
   if(window.fbLoad){
     window.fbLoad(mode,stim,total).then(function(rows){
       if(rows && S.rankKey===key){
         rows.sort(function(a,b){ return (a.avg||9999)-(b.avg||9999); });
-        renderRankList(rows, el, mode);
+        renderRankList(rows, el, mode, latest);
       }
     }).catch(function(){});
   }
