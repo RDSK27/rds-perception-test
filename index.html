@@ -878,6 +878,15 @@ function getHomeName(){
 
 function renderRankList(list, el, m, latest){
   list=filterRepeated(list);
+  function rankBetter(a,b){
+    if(a==null) return false; if(b==null) return true;
+    var av=(a.avg==null?9999:a.avg), bv=(b.avg==null?9999:b.avg);
+    if(m==='limite'){
+      var ae=(a.ensayos||0), be=(b.ensayos||0);
+      return ae>be || (ae===be && av<bv);
+    }
+    return av<bv;
+  }
   var medals=['gold','silver','bronze'];
   var meName=getHomeName();
   var myIdx=-1, myEntry=null;
@@ -918,9 +927,9 @@ function renderRankList(list, el, m, latest){
     for(var s2=0;s2<display.length;s2++){ if(display[s2].ts!=null) shownTs[display[s2].ts]=1; }
     var bestExtra=(myEntry && myIdx>=15 && myEntry.ts===latest.ts);
     if(!shownTs[latest.ts] && !bestExtra){
-      var lv=(latest.avg==null?9999:latest.avg), lpos=1;
-      for(var q=0;q<list.length;q++){ if((list[q].avg==null?9999:list[q].avg) < lv) lpos++; }
-      var greyLatest=!!(myEntry && myIdx<15 && (myEntry.avg==null?9999:myEntry.avg) < lv);
+      var lpos=1;
+      for(var q=0;q<list.length;q++){ if(rankBetter(list[q], latest)) lpos++; }
+      var greyLatest=!!(myEntry && myIdx<15 && rankBetter(myEntry, latest));
       el.appendChild(buildRow(latest, (lpos>=100?'100+':String(lpos)), -1, true, greyLatest));
     }
   }
@@ -993,12 +1002,12 @@ function renderRank(mode,stim,total){
     latest=S.lastRec;
   }
   var lbLocal=loadLb(key);
-  lbLocal.sort(function(a,b){ return (a.avg||9999)-(b.avg||9999); });
+  sortLb(lbLocal, mode);
   renderRankList(lbLocal, el, mode, latest);
   if(window.fbLoad){
     window.fbLoad(mode,stim,total).then(function(rows){
       if(rows && S.rankKey===key){
-        rows.sort(function(a,b){ return (a.avg||9999)-(b.avg||9999); });
+        sortLb(rows, mode);
         renderRankList(rows, el, mode, latest);
       }
     }).catch(function(){});
