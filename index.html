@@ -118,6 +118,14 @@ if('serviceWorker' in navigator){
   .btn-ranking { width:75%; padding:9px; background:#fff; color:#b03020; border:2px solid #b03020; font-size:0.78rem; font-weight:900; letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; text-align:center; border-radius:6px; transition:transform 0.12s; margin-top:0; }
   .btn-ranking:active{transform:translateY(3px);}
 
+  .home-btn-row{ display:flex; align-items:center; justify-content:center; gap:16px; }
+  .home-btn-row #btn-start-wrap{ margin:0; }
+  .start-wrap{ display:flex; width:fit-content; align-items:center; justify-content:center; padding:4px; border-radius:50%; background:conic-gradient(#ffffff,#9a9a9a,#e8e8e8,#5a5a5a,#ffffff,#8a8a8a,#dcdcdc,#666666,#ffffff); box-shadow:0 5px 12px rgba(0,0,0,0.6); transition:transform 0.08s, box-shadow 0.08s; }
+  .start-wrap:active{ transform:translateY(3px); box-shadow:0 2px 6px rgba(0,0,0,0.6); }
+  .start-btn{ width:70px; height:70px; border-radius:50%; border:none; cursor:pointer; box-shadow:inset 0 2px 4px rgba(255,255,255,0.28), inset 0 -3px 6px rgba(0,0,0,0.5); }
+  .start-btn.rank-btn{ background:radial-gradient(circle at 35% 30%, #ffffff 0%, #ececec 45%, #c6c6c6 100%); display:flex; align-items:center; justify-content:center; padding:0; }
+  .start-btn.rank-btn svg{ display:block; }
+
 
   footer{
     text-align:center;color:var(--tx-gris);font-weight:600;letter-spacing:2px;
@@ -295,10 +303,14 @@ if('serviceWorker' in navigator){
     </div>
 
     <div style="border:3px solid #b03020;border-radius:10px;background-color:#000000;padding:10px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;width:92%;box-sizing:border-box;margin:auto auto 28px;">
-      <div id="btn-start-wrap">
-        <button id="btn-start" ontouchend="event.stopPropagation();" onclick="startGame()">START</button>
+      <div class="home-btn-row">
+        <div id="btn-start-wrap">
+          <button id="btn-start" ontouchend="event.stopPropagation();" onclick="startGame()">START</button>
+        </div>
+        <div class="start-wrap">
+          <button class="start-btn rank-btn" ontouchend="event.stopPropagation();" onclick="showRanking()" aria-label="Ranking"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 13.5v7.5M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 4H4v2a3 3 0 0 0 3 3M17 4h3v2a3 3 0 0 1-3 3"/></svg></button>
+        </div>
       </div>
-      <button class="btn-ranking" onclick="showRanking()">&#127942; Ranking</button>
   <div id="user-name-bar">
     <div style="display:flex;width:200px;gap:0;margin:0 auto;">
       <input id="user-ini-input" type="text" maxlength="3" placeholder="INI"
