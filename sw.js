@@ -1,5 +1,5 @@
 /* RDS Perception Speed Test - Service Worker */
-var CACHE = 'pst-v67';
+var CACHE = 'pst-v68';
 var ASSETS = [
   './',
   './index.html',
@@ -40,7 +40,7 @@ self.addEventListener('fetch', function(e){
   // con la cache como respaldo offline.
   if(req.mode === 'navigate'){
     e.respondWith(
-      fetch(req).then(function(resp){
+      fetch(req, {cache:'no-store'}).then(function(resp){
         var copy = resp.clone();
         caches.open(CACHE).then(function(cache){ try{ cache.put('./index.html', copy); }catch(err){} });
         return resp;
