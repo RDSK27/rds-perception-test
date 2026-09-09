@@ -57,15 +57,18 @@ if('serviceWorker' in navigator){
     color-scheme:light;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  html,body{height:100%;background:#000000;overflow:hidden;overscroll-behavior:none;}
+  html,body{height:100%;background:#000000;overscroll-behavior:none;}
   body{
     font-family:Arial,Helvetica,sans-serif;
     background:transparent;
     color:var(--negro);
     -webkit-user-select:none;user-select:none;
     touch-action:manipulation;
-    overflow:hidden;overscroll-behavior:none;
+    overscroll-behavior:none;
   }
+  /* El bloqueo de scroll se hace en .app (no en html/body) para que iOS pueda
+     desplazar el campo INI sobre el teclado en modo standalone (PWA). */
+  .app{overflow:hidden;}
   body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:#000000;z-index:-2;pointer-events:none;}
   body::after{content:"";position:fixed;top:0;bottom:0;left:0;right:0;margin:0 auto;width:560px;max-width:100%;background:#FFFFFF;z-index:-1;pointer-events:none;}
   body.home-active::after{background:#b0b4b8;}
@@ -1070,6 +1073,21 @@ $('btnGuardarRank').addEventListener('click', function(){
   }
   if(iniEl) iniEl.addEventListener('input', persistUser);
   if(sptEl) sptEl.addEventListener('change', persistUser);
+
+  /* iPad/iOS en modo standalone (PWA): a veces el toque no llega a abrir el
+     teclado. Forzamos el foco desde el propio gesto y acercamos el campo. */
+  if(iniEl){
+    iniEl.addEventListener('touchend', function(e){
+      if(document.activeElement!==iniEl){
+        e.preventDefault();
+        iniEl.focus();
+        try{ iniEl.setSelectionRange(iniEl.value.length, iniEl.value.length); }catch(_){}
+      }
+      setTimeout(function(){
+        try{ iniEl.scrollIntoView({block:'center'}); }catch(_){ }
+      }, 150);
+    }, {passive:false});
+  }
 })();
 
 var navs=document.querySelectorAll('.nav-btn');
