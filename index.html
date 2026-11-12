@@ -366,7 +366,7 @@ if('serviceWorker' in navigator){
           <button class="start-btn rank-btn" ontouchend="event.stopPropagation();" onclick="showRanking()" aria-label="Ranking"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 13.5v7.5M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 4H4v2a3 3 0 0 0 3 3M17 4h3v2a3 3 0 0 1-3 3"/></svg></button>
         </div>
       </div>
-  <div class="app-ver" style="margin-top:6px;padding-top:0;">v93</div>
+  <div class="app-ver" style="margin-top:6px;padding-top:0;">v94</div>
   <div id="user-name-bar" style="margin-top:8px;">
     <div style="display:flex;width:200px;gap:0;margin:0 auto;">
       <input id="user-ini-input" type="text" maxlength="3" placeholder="INI"
@@ -1196,12 +1196,12 @@ function warmRank(mode,stim,total){
 /* ---------- modo x2: dos jugadores en un movil, sin ranking (2026-11-08; misma estructura que Processing x2) ----------
    Normal o Extremo, siempre Estimulo Cambia. En Extremo los X_CELLS simbolos se sortean y recolocan con cada estimulo y no se quita ninguna casilla. Jugador 1 = mitad de abajo, jugador 2 = mitad de arriba (girada 180 grados). La banda central es doble: cada jugador ve el estimulo de cara, en su mitad.
    Los dos tienen los mismos X_CELLS simbolos en los mismos sitios (4 columnas x 3 filas), cada uno visto desde su lado.
-   Primero en pulsar el simbolo +1 y el simbolo desaparece de las dos cuadriculas. Simbolo equivocado: -1 para quien pulsa, +1 para el rival, y cambia el estimulo (pero no se quita ninguna casilla).
-   Gana el juego el primero que llega a X_WIN; con 5-5 gana el siguiente. Partido al mejor de 3. Solo los aciertos gastan casillas y los puntos de los dos suman tantos como aciertos, asi que como mucho hay 11 aciertos y las 12 casillas nunca se acaban.
+   Primero en pulsar el simbolo +1 y el simbolo desaparece de las dos cuadriculas. Tras cada pulsacion (acierto o fallo) se tapan cuadriculas y estimulo X_FREEZE ms y luego vuelven. Simbolo equivocado: -1 para quien pulsa, +1 para el rival, y cambia el estimulo (pero no se quita ninguna casilla).
+   (2026-11-12) Gana el set el primero que llega a X_WIN = 7 (mas de la mitad de 12); con 6-6 se acaban las casillas, sale cuadricula nueva y gana el siguiente. Partido al mejor de 3. Solo los aciertos gastan casillas y los puntos de los dos suman tantos como aciertos, asi que como mucho hay 11 aciertos y las 12 casillas nunca se acaban.
    El contador n/X_TOTAL son los estimulos que han salido; si un fallo alarga el juego puede pasar de X_TOTAL (puntos parpadeando). */
 var X={on:false,mode:'normal',pts:[0,0],games:[0,0],gameNo:1,n:0,state:'',t0:0,to:0,hist:[],cells:[],target:-1,tIdx:-1,ready:[false,false]};
-var X_TOTAL=10, X_MARGIN=2, X_CELLS=12, X_FREEZE=1000, X_WINGAMES=3, X_ORD=['primer','segundo','tercer'];
-function xSetWon(a,b){ return a>=X_TOTAL && a-b>=X_MARGIN; }   /* set: primero a 10; con empate a 9 hacen falta 2 de diferencia (2026-11-10) */
+var X_TOTAL=10, X_MARGIN=2, X_CELLS=12, X_WIN=X_CELLS/2+1, X_FREEZE=1000, X_WINGAMES=3, X_ORD=['primer','segundo','tercer'];
+function xSetWon(a,b){ return a>=X_WIN; }   /* 2026-11-12: gana el set quien encuentra mas de la mitad (7 de 12); con 6-6 sale una cuadricula nueva y gana el siguiente */
 function isX2(){ return $('segModo').querySelector('[data-v="x2"]').classList.contains('x2on'); }
 function xToggle(b){
   var box=$('segModo'), on=b.classList.toggle('x2on');
@@ -1221,7 +1221,7 @@ function xTarget(html,cls){ for(var p=0;p<2;p++){ var t=xHalf(p,'.x2-target'); t
 function xBtn(act,txt,sec){ return '<button class="x2-bt'+(sec?' x2-sec':'')+'" type="button" data-x="'+act+'">'+txt+'</button>'; }
 function xRes(a,b){ return a+' &ndash; '+b; }
 function xRender(){
-  var extra=X.on && X.pts[0]>=X_TOTAL-1 && X.pts[1]>=X_TOTAL-1, p;
+  var extra=X.on && X.pts[0]>=X_WIN-1 && X.pts[1]>=X_WIN-1, p;
   for(p=0;p<2;p++){
     var pts=xZone(p,'.x2-pts');
     pts.innerHTML='Set <b>'+xRes(X.pts[p],X.pts[1-p])+'</b>';
@@ -1253,7 +1253,7 @@ function startX2(){   /* pantalla inicial con la informacion para cada jugador *
   var ext=X.mode==='extremo';
   show('x2'); $('x2Stop').style.display='block'; xRender();
   for(var p=0;p<2;p++) xPanel(p,'<div class="x2-pt">Jugador '+(p+1)+(ext?' &middot; Extremo':'')+'</div>'
-    +'<div class="x2-pr">Gana el partido el primero que gane 3 sets.<br>Gana el set el primero que llegue a 10 puntos; con empate a 9 hacen falta 2 de diferencia.</div>'
+    +'<div class="x2-pr">Gana el partido el primero que gane 3 sets.<br>Gana el set quien encuentre m&aacute;s de los 12 s&iacute;mbolos: el primero que llega a 7 (m&aacute;s de la mitad). Con 6 a 6, sale una cuadr&iacute;cula nueva y gana el siguiente.</div>'
     +'<div class="x2-rules">Busca en tu cuadr&iacute;cula el s&iacute;mbolo de la banda: el primero que lo pulsa suma 1. Si te equivocas, -1 para ti y +1 para el rival.'+(ext?' <b>Los s&iacute;mbolos cambian en cada est&iacute;mulo.</b>':'')+'</div>'
     +xBtn('start','Empezar'));
 }
@@ -1296,6 +1296,7 @@ function xNext(){   /* Normal: el estimulo sale de lo que queda en la cuadricula
   if(!left.length) left=[X.tIdx];
   X.tIdx=left[Math.floor(Math.random()*left.length)];
   X.target=X.cells[X.tIdx];
+  xGrid(true);
   xTarget(glyphSVG(X.target));
   X.state='stim'; X.n++; X.t0=performance.now(); xRender();
 }
@@ -1311,7 +1312,7 @@ function xPress(p,i){
     X.pts[p]--; X.pts[1-p]++; msg[p]='Fallo -1'; msg[1-p]='Fallo rival +1';
     sndFail();
   }
-  if(X.mode==='extremo') xGrid(false);
+  xGrid(false);   /* 2026-11-12: tras cada pulsacion se tapa todo, asi el que pulsa casi a la vez no falla sobre la casilla que ya no esta */
   X.state='freeze';
   xTarget();
   xFlash(msg[0],msg[1]);
