@@ -366,7 +366,7 @@ if('serviceWorker' in navigator){
           <button class="start-btn rank-btn" ontouchend="event.stopPropagation();" onclick="showRanking()" aria-label="Ranking"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 13.5v7.5M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 4H4v2a3 3 0 0 0 3 3M17 4h3v2a3 3 0 0 1-3 3"/></svg></button>
         </div>
       </div>
-  <div class="app-ver" style="margin-top:6px;padding-top:0;">v94</div>
+  <div class="app-ver" style="margin-top:6px;padding-top:0;">v95</div>
   <div id="user-name-bar" style="margin-top:8px;">
     <div style="display:flex;width:200px;gap:0;margin:0 auto;">
       <input id="user-ini-input" type="text" maxlength="3" placeholder="INI"
@@ -1201,6 +1201,82 @@ function warmRank(mode,stim,total){
    El contador n/X_TOTAL son los estimulos que han salido; si un fallo alarga el juego puede pasar de X_TOTAL (puntos parpadeando). */
 var X={on:false,mode:'normal',pts:[0,0],games:[0,0],gameNo:1,n:0,state:'',t0:0,to:0,hist:[],cells:[],target:-1,tIdx:-1,ready:[false,false]};
 var X_TOTAL=10, X_MARGIN=2, X_CELLS=12, X_WIN=X_CELLS/2+1, X_FREEZE=1000, X_WINGAMES=3, X_ORD=['primer','segundo','tercer'];
+var X2_PTS=false;
+/* ---------- x2: opciones de partido (2026-11-16, comun a las apps x2) ----------
+   Al pulsar START con x2 sale este selector a pantalla completa antes de la pantalla de juego.
+   best: 3 (gana quien gane 2 sets) o 5 (quien gane 3). Solo en las apps de puntos a 10 (X2_PTS):
+   tie: con 9-9 'diez' = gana quien llega a 10, 'dif' = hacen falta 2 de diferencia;
+   dec: set decisivo (el que se juega con empate a sets) 'set' = set normal, 'oro' = un solo punto, 'dif' = gana quien saque 2 puntos de ventaja.
+   Se recuerda en localStorage. X_WINGAMES se ajusta al elegir. */
+var X2O={best:3,tie:'dif',dec:'set',go:false};
+(function(){ try{ var o=JSON.parse(localStorage.getItem('rds_x2_opts')||'null'); if(o){ if(o.best===5) X2O.best=5; if(o.tie==='diez') X2O.tie='diez'; if(o.dec==='oro'||o.dec==='dif') X2O.dec=o.dec; } }catch(e){} })();
+function x2Apply(){ X_WINGAMES=X2O.best===5?3:2; }
+x2Apply();
+function x2Decisive(){ return X.games[0]===X_WINGAMES-1 && X.games[1]===X_WINGAMES-1; }
+function x2SetWon(a,b){
+  var d=x2Decisive()?X2O.dec:'set';
+  if(d==='oro') return a>=1 && a>b;
+  if(d==='dif') return a-b>=2;
+  return a>=X_TOTAL && (X2O.tie==='diez' || a-b>=X_MARGIN);
+}
+function x2Blink(){
+  if(!X.on) return false;
+  if(x2Decisive() && X2O.dec!=='set') return true;
+  return X2O.tie==='dif' && X.pts[0]>=X_TOTAL-1 && X.pts[1]>=X_TOTAL-1;
+}
+function x2MatchText(){ return 'Al mejor de '+X2O.best+': gana el partido el primero que gane '+(X2O.best===5?3:2)+' sets.'; }
+function x2DecText(){ return X2O.dec==='oro'?'Set decisivo: punto de oro (un solo punto gana el partido).':(X2O.dec==='dif'?'Set decisivo: gana quien saque 2 puntos de ventaja.':''); }
+function x2RulesText(){
+  var d=x2DecText();
+  return x2MatchText()+'<br>Gana el set el primero que llegue a 10 puntos; '+(X2O.tie==='dif'?'con empate a 9 hacen falta 2 de diferencia.':'con empate a 9, gana quien llega a 10.')+(d?'<br>'+d:'');
+}
+function x2NextNote(){   /* aviso en el panel de fin de set si el siguiente es el decisivo */
+  if(!X2_PTS || X2O.dec==='set' || !x2Decisive()) return '';
+  return '<div class="x2-pr"><b>'+x2DecText()+'</b></div>';
+}
+function x2OptsGate(cb){   /* START con x2: primero el selector; al pulsar Jugar se vuelve a llamar a cb */
+  if(X2O.go){ X2O.go=false; return true; }
+  x2OptsOpen(cb); return false;
+}
+function x2OptsOpen(cb){
+  var el=document.getElementById('x2o');
+  if(!el){
+    var st=document.createElement('style');
+    st.textContent='#x2o{position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px 16px;box-sizing:border-box;background:#fff;font-family:Arial,sans-serif;color:#111;overflow:auto;touch-action:pan-y;}'
+      +'#x2o .x2o-t{font-size:24px;font-weight:900;color:#b03020;text-transform:uppercase;letter-spacing:.06em;}'
+      +'#x2o .x2o-g{width:100%;max-width:380px;display:flex;flex-direction:column;gap:6px;}'
+      +'#x2o .x2o-k{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#444;}'
+      +'#x2o .x2o-row{display:flex;border-top:4px solid #b03020;background:#111;}'
+      +'#x2o .x2o-row button{flex:1;min-height:46px;padding:6px 4px;background:#111;color:#fff;border:0;border-right:1px solid #333;font:900 13px Arial,sans-serif;text-transform:uppercase;letter-spacing:.03em;line-height:1.2;cursor:pointer;}'
+      +'#x2o .x2o-row button:last-child{border-right:0;}'
+      +'#x2o .x2o-row button.on{background:#b03020;}'
+      +'#x2o .x2o-bs{display:flex;gap:10px;margin-top:6px;}'
+      +'#x2o .x2o-b{min-width:130px;padding:13px 16px;border:0;border-radius:6px;background:#b03020;color:#fff;font:900 16px Arial,sans-serif;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;}'
+      +'#x2o .x2o-b.sec{background:#111;}';
+    document.head.appendChild(st);
+    el=document.createElement('div'); el.id='x2o'; document.body.appendChild(el);
+    el.addEventListener('click', function(e){
+      var b=e.target.closest ? e.target.closest('button') : null; if(!b) return;
+      var k=b.getAttribute('data-k'), v=b.getAttribute('data-v');
+      if(k){ X2O[k]=k==='best'?+v:v; x2OptsDraw(); return; }
+      if(v==='back'){ el.style.display='none'; return; }
+      if(v==='go'){
+        try{ localStorage.setItem('rds_x2_opts',JSON.stringify({best:X2O.best,tie:X2O.tie,dec:X2O.dec})); }catch(e){}
+        x2Apply(); el.style.display='none'; X2O.go=true; if(el._cb) el._cb();
+      }
+    });
+  }
+  el._cb=cb; x2OptsDraw(); el.style.display='flex';
+}
+function x2OptsDraw(){
+  function row(k,opts){ return '<div class="x2o-row">'+opts.map(function(o){ return '<button type="button" data-k="'+k+'" data-v="'+o[0]+'" class="'+(String(X2O[k])===String(o[0])?'on':'')+'">'+o[1]+'</button>'; }).join('')+'</div>'; }
+  var h='<div class="x2o-t">Modo x2</div>'
+    +'<div class="x2o-g"><div class="x2o-k">Partido</div>'+row('best',[[3,'Al mejor de 3<br>(2 sets)'],[5,'Al mejor de 5<br>(3 sets)']])+'</div>';
+  if(X2_PTS) h+='<div class="x2o-g"><div class="x2o-k">Empate a 9</div>'+row('tie',[['diez','Gana quien<br>llega a 10'],['dif','Diferencia<br>de 2']])+'</div>'
+    +'<div class="x2o-g"><div class="x2o-k">Set decisivo ('+(X2O.best===5?'5.&ordm;':'3.&ordm;')+')</div>'+row('dec',[['set','Otro set'],['oro','Punto<br>de oro'],['dif','Diferencia<br>de 2']])+'</div>';
+  h+='<div class="x2o-bs"><button type="button" class="x2o-b sec" data-v="back">Volver</button><button type="button" class="x2o-b" data-v="go">Jugar</button></div>';
+  document.getElementById('x2o').innerHTML=h;
+}
 function xSetWon(a,b){ return a>=X_WIN; }   /* 2026-11-12: gana el set quien encuentra mas de la mitad (7 de 12); con 6-6 sale una cuadricula nueva y gana el siguiente */
 function isX2(){ return $('segModo').querySelector('[data-v="x2"]').classList.contains('x2on'); }
 function xToggle(b){
@@ -1224,10 +1300,10 @@ function xRender(){
   var extra=X.on && X.pts[0]>=X_WIN-1 && X.pts[1]>=X_WIN-1, p;
   for(p=0;p<2;p++){
     var pts=xZone(p,'.x2-pts');
-    pts.innerHTML='Set <b>'+xRes(X.pts[p],X.pts[1-p])+'</b>';
+    pts.innerHTML='Puntos <b>'+xRes(X.pts[p],X.pts[1-p])+'</b>';
     pts.classList.toggle('x2-blink',extra);
     xZone(p,'.x2-who').textContent='Jugador '+(p+1);
-    xZone(p,'.x2-gm').innerHTML='Partido <b>'+xRes(X.games[p],X.games[1-p])+'</b>';
+    xZone(p,'.x2-gm').innerHTML='Sets <b>'+xRes(X.games[p],X.games[1-p])+'</b>';
   }
 }
 function xGrid(show){   /* las dos cuadriculas, con los mismos simbolos en las mismas casillas */
@@ -1246,14 +1322,15 @@ function xGameSetup(){
   xGrid(false);
 }
 function xReset(){ xClear(); X.pts=[0,0]; X.games=[0,0]; X.gameNo=1; X.n=0; X.hist=[]; xPanelsOff(); xFlash(); xTarget(); }
-function startX2(){   /* pantalla inicial con la informacion para cada jugador */
+function startX2(){
+  if(!x2OptsGate(startX2)) return;   /* primero el selector de opciones (2026-11-16) */   /* pantalla inicial con la informacion para cada jugador */
   X.mode=selVal('segModo')==='extremo'?'extremo':'normal';
   xReset(); X.on=false; X.state='intro'; X.ready=[false,false];
   xGameSetup();
   var ext=X.mode==='extremo';
   show('x2'); $('x2Stop').style.display='block'; xRender();
   for(var p=0;p<2;p++) xPanel(p,'<div class="x2-pt">Jugador '+(p+1)+(ext?' &middot; Extremo':'')+'</div>'
-    +'<div class="x2-pr">Gana el partido el primero que gane 3 sets.<br>Gana el set quien encuentre m&aacute;s de los 12 s&iacute;mbolos: el primero que llega a 7 (m&aacute;s de la mitad). Con 6 a 6, sale una cuadr&iacute;cula nueva y gana el siguiente.</div>'
+    +'<div class="x2-pr">'+x2MatchText()+'<br>Gana el set quien encuentre m&aacute;s de los 12 s&iacute;mbolos: el primero que llega a 7 (m&aacute;s de la mitad). Con 6 a 6, sale una cuadr&iacute;cula nueva y gana el siguiente.</div>'
     +'<div class="x2-rules">Busca en tu cuadr&iacute;cula el s&iacute;mbolo de la banda: el primero que lo pulsa suma 1. Si te equivocas, -1 para ti y +1 para el rival.'+(ext?' <b>Los s&iacute;mbolos cambian en cada est&iacute;mulo.</b>':'')+'</div>'
     +xBtn('start','Empezar'));
 }
@@ -1340,8 +1417,8 @@ function xGameEnd(i){
   }
   X.state='between'; X.ready=[false,false]; xRender();
   for(p=0;p<2;p++) xPanel(p,'<div class="x2-pt">Has '+(p===i?'ganado':'perdido')+' el set '+X.gameNo+'</div>'
-    +'<div class="x2-pr">Set '+xRes(X.pts[p],X.pts[1-p])+'<br>Partido '+xRes(X.games[p],X.games[1-p])+'</div>'
-    +xBtn('next','Continuar'));
+    +'<div class="x2-pr">Puntos '+xRes(X.pts[p],X.pts[1-p])+'<br>Sets '+xRes(X.games[p],X.games[1-p])+'</div>'
+    +x2NextNote()+xBtn('next','Continuar'));
 }
 function xStop(){
   if(X.state==='intro'){ goHome(); return; }
